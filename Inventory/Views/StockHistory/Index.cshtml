@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Inventory.Models.StockTransaction>
+
+@{
+    ViewData["Title"] = "Stock Movement History";
+    var products = ViewBag.Products
+        as IEnumerable<Inventory.Models.Product>
+        ?? Enumerable.Empty<Inventory.Models.Product>();
+}
+
+<h2>Stock Movement History</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <label class="form-label">Product</label>
+        <select name="productId" class="form-select">
+            <option value="">All products</option>
+            @foreach (var p in products)
+            {
+                <option value="@p.Id"
+                        selected="@(ViewBag.ProductId is int id && id == p.Id)">
+                    @p.PartNumber - @p.Name
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">From</label>
+        <input type="date" name="from" value="@ViewBag.From"
+               class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">To</label>
+        <input type="date" name="to" value="@ViewBag.To"
+               class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-primary w-100">Filter</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Part Code / Item</th>
+                <th>Movement</th>
+                <th class="text-end">Quantity Change</th>
+                <th>Reference</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.TransactionDate.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</td>
+                <td>@t.Product.PartNumber - @t.Product.Name</td>
+                <td>@t.MovementType</td>
+                <td class="text-end">@t.QuantityChange.ToString("N3")</td>
+                <td>@t.ReferenceNumber</td>
+                <td>@t.Remarks</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Inventory.ViewModels.StockRow>
+
+@{
+    ViewData["Title"] = "Current Stock";
+}
+
+<h2>Current Stock</h2>
+
+<a asp-controller="Stock"
+   asp-action="ExportCsv"
+   asp-route-search="@ViewBag.Search"
+   class="btn btn-success">
+    Export Current Stock CSV
+</a>
+
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input name="search" value="@ViewBag.Search"
+               class="form-control"
+               placeholder="Search part code or item name" />
+        <button class="btn btn-outline-primary">Search</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Part Code</th>
+                <th>Item</th>
+                <th>Category</th>
+                <th class="text-end">Available</th>
+                <th class="text-end">Reorder Level</th>
+                <th class="text-end">Estimated Value</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Model)
+        {
+            <tr>
+                <td>@row.PartNumber</td>
+                <td>@row.Name</td>
+                <td>@row.Category</td>
+                <td class="text-end">
+                    @row.Quantity.ToString("N3") @row.Unit
+                </td>
+                <td class="text-end">@row.ReorderLevel</td>
+                <td class="text-end">@row.StockValue.ToString("N2")</td>
+                <td>
+                    @if (row.IsLowStock)
+                    {
+                        <span class="badge bg-warning text-dark">
+                            Reorder
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">OK</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

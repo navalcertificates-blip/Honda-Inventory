@@ -1,0 +1,259 @@
+﻿@{
+    var isHomePage =
+        ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" &&
+        ViewContext.RouteData.Values["Action"]?.ToString() == "Index";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Om Honda</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Inventory.styles.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            color: #222222;
+            font-weight: 500;
+            background-color: #ffffff;
+        }
+
+        /* Honda Red Navigation Bar */
+        .navbar {
+            background-color: #cc0000 !important;
+            border-bottom: 3px solid #990000 !important;
+            margin-bottom: 0 !important;
+        }
+
+        .navbar .navbar-brand,
+        .navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .navbar .nav-link:hover {
+            color: #ffe0e0 !important;
+            text-decoration: underline;
+        }
+
+        .navbar .navbar-toggler {
+            border-color: white;
+        }
+
+        .navbar .navbar-toggler-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        /* Background Image - Starts Below Navigation */
+        .page-background {
+            min-height: calc(100vh - 62px);
+            padding-top: 25px;
+            padding-bottom: 25px;
+            background-color: white;
+        }
+
+        .home-background {
+            background-image:
+                linear-gradient(
+                    rgba(255, 255, 255, 0.45),
+                    rgba(255, 255, 255, 0.45)
+                ),
+                url('/images/background.png');
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Main Content */
+        /* main {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #222222;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+        } */
+
+        /* Headings */
+        h1, h2, h3, h4, h5, h6 {
+            color: #990000;
+            font-weight: 700;
+        }
+
+        /* Labels and Text */
+        label, p, td, th {
+            color: #222222;
+        }
+
+        /* Input Controls */
+        input, select, textarea {
+            color: #222222 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #777777 !important;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #cc0000;
+            border-color: #990000;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #990000;
+            border-color: #800000;
+            color: #ffffff;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #ffffff;
+            color: #222222 !important;
+            padding: 12px 0;
+            border-top: 1px solid #dddddd;
+        }
+
+        footer a {
+            color: #990000;
+            font-weight: 600;
+        }
+
+        /* Mobile Screens */
+        @@media (max-width: 768px) {
+
+            .page-background {
+                background-size: cover;
+                background-position: center top;
+                min-height: calc(100vh - 62px);
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+
+            main {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow">
+            <div class="container-fluid">
+
+                <a class="navbar-brand"
+                   asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index">
+                   <b>Om Honda</b>  
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Products"
+                               asp-action="Index">
+                                Products
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="StockEntry"
+                               asp-action="Create">
+                                Stock Entry
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="StockOut"
+                               asp-action="Sale">
+                                Counter Sale
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="StockOut"
+                               asp-action="Service">
+                                Workshop Service
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="StockOut"
+                               asp-action="SalesHistory">
+                                Sales History
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="StockOut"
+                               asp-action="ServiceHistory">
+                                Service History
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Reports"
+                               asp-action="Index">
+                                Stock Out Report
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Background Image Area -->
+    <div class="page-background @(isHomePage ? "home-background" : "")">
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

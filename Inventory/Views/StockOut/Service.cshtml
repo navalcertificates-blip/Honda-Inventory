@@ -1,0 +1,189 @@
+﻿@model Inventory.ViewModels.ServiceJobViewModel
+
+@{
+    ViewData["Title"] = "Workshop Service";
+    var products = ViewBag.Products
+        as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+        ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+}
+
+<h2>Stock Out - Workshop Service</h2>
+
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success">@message</div>
+}
+
+<form asp-action="Service" method="post">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="JobCardNumber" class="form-label"></label>
+            <input asp-for="JobCardNumber" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="JobDate" class="form-label"></label>
+            <input asp-for="JobDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="CustomerName" class="form-label"></label>
+            <input asp-for="CustomerName" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="CustomerPhone" class="form-label"></label>
+            <input asp-for="CustomerPhone" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="VehicleRegistration" class="form-label"></label>
+            <input asp-for="VehicleRegistration" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="VehicleModel" class="form-label"></label>
+            <input asp-for="VehicleModel" class="form-control" />
+        </div>
+    </div>
+
+    <h5>Parts consumed</h5>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="min-width:260px">Item</th>
+                    <th style="min-width:110px">Quantity</th>
+                    <th style="min-width:140px">Selling price</th>
+                    <th class="text-end">Line total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody">
+                @for (var i = 0; i < Model.Items.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <select name="Items[@i].ProductId"
+                                    class="form-select product-select" required>
+                                <option value="">Select item</option>
+                                @foreach (var p in products)
+                                {
+                                    <option value="@p.Value">@p.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <input name="Items[@i].Quantity"
+                                   type="number" min="0.001" step="0.001"
+                                   value="@Model.Items[i].Quantity"
+                                   class="form-control qty" required />
+                        </td>
+                        <td>
+                            <input name="Items[@i].UnitPrice"
+                                   type="number" min="0" step="0.01"
+                                   value="@Model.Items[i].UnitPrice"
+                                   class="form-control price" required />
+                        </td>
+                        <td class="text-end line-total">0.00</td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger remove-row">
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <button type="button" id="addRow" class="btn btn-outline-primary">
+        Add Part
+    </button>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <label asp-for="LabourCharges" class="form-label"></label>
+            <input asp-for="LabourCharges" type="number" min="0" step="0.01"
+                   class="form-control" id="labour" />
+        </div>
+        <div class="col-md-8 mb-3">
+            <label asp-for="Remarks" class="form-label"></label>
+            <textarea asp-for="Remarks" class="form-control"></textarea>
+        </div>
+    </div>
+
+    <div class="text-end mb-3">
+        <div>Parts: <span id="partsTotal">0.00</span></div>
+        <h4>Customer Bill: <span id="grandTotal">0.00</span></h4>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Save Job & Deduct Stock
+    </button>
+    <a asp-controller="Stock" asp-action="Index"
+       class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const body = document.getElementById('itemsBody');
+        const optionsHtml = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                products.Select(p => new { value = p.Value, text = p.Text })));
+
+        function renumber() {
+            [...body.rows].forEach((row, i) => {
+                row.querySelector('.product-select').name = `Items[${i}].ProductId`;
+                row.querySelector('.qty').name = `Items[${i}].Quantity`;
+                row.querySelector('.price').name = `Items[${i}].UnitPrice`;
+            });
+            calculate();
+        }
+
+        function calculate() {
+            let parts = 0;
+            [...body.rows].forEach(row => {
+                const qty = Number(row.querySelector('.qty').value) || 0;
+                const price = Number(row.querySelector('.price').value) || 0;
+                const line = qty * price;
+                row.querySelector('.line-total').textContent = line.toFixed(2);
+                parts += line;
+            });
+            const labour = Number(document.getElementById('labour').value) || 0;
+            document.getElementById('partsTotal').textContent = parts.toFixed(2);
+            document.getElementById('grandTotal').textContent =
+                (parts + labour).toFixed(2);
+        }
+
+        document.getElementById('addRow').addEventListener('click', () => {
+            const row = body.insertRow();
+            row.innerHTML = `
+                <td><select class="form-select product-select" required>
+                    <option value="">Select item</option>
+                    ${optionsHtml.map(p =>
+                        `<option value="${p.value}">${p.text}</option>`).join('')}
+                </select></td>
+                <td><input type="number" min="0.001" step="0.001"
+                    value="1" class="form-control qty" required></td>
+                <td><input type="number" min="0" step="0.01"
+                    value="0" class="form-control price" required></td>
+                <td class="text-end line-total">0.00</td>
+                <td><button type="button"
+                    class="btn btn-sm btn-outline-danger remove-row">Remove</button></td>`;
+            renumber();
+        });
+
+        body.addEventListener('input', calculate);
+        body.addEventListener('change', calculate);
+        body.addEventListener('click', e => {
+            if (e.target.classList.contains('remove-row')) {
+                e.target.closest('tr').remove();
+                renumber();
+            }
+        });
+        document.getElementById('labour').addEventListener('input', calculate);
+
+        renumber();
+    </script>
+}

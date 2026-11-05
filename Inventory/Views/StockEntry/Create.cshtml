@@ -1,0 +1,107 @@
+﻿@model Inventory.ViewModels.ManualStockEntryViewModel
+
+@{
+    ViewData["Title"] = "Manual Stock Entry";
+}
+
+<h2 class="mb-2">Manual Stock Entry</h2>
+<p class="text-muted">
+    Enter stock received or added to your showroom inventory.
+</p>
+
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success">@message</div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="ProductId" class="form-label">
+                    Select Item
+                </label>
+                <select asp-for="ProductId"
+                        asp-items="Model.Products"
+                        class="form-select">
+                    <option value="">-- Select item --</option>
+                </select>
+                <span asp-validation-for="ProductId"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Quantity"
+                           class="form-label"></label>
+                    <input asp-for="Quantity"
+                           class="form-control"
+                           type="number"
+                           min="0.001"
+                           step="0.001"
+                           placeholder="Enter quantity" />
+                    <span asp-validation-for="Quantity"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="UnitCost"
+                           class="form-label"></label>
+                    <input asp-for="UnitCost"
+                           class="form-control"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           placeholder="Enter cost per unit" />
+                    <span asp-validation-for="UnitCost"
+                          class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EntryDate"
+                       class="form-label"></label>
+                <input asp-for="EntryDate"
+                       type="date"
+                       class="form-control" />
+                <span asp-validation-for="EntryDate"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Remarks"
+                       class="form-label"></label>
+                <textarea asp-for="Remarks"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Optional remarks"></textarea>
+                <span asp-validation-for="Remarks"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Stock
+            </button>
+
+            <a asp-controller="Stock"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                View Current Stock
+            </a>
+
+            <a asp-controller="StockHistory"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                Stock History
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

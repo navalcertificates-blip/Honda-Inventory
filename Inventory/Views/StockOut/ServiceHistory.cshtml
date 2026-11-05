@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Inventory.Models.ServiceJob>
+
+@{
+    ViewData["Title"] = "Workshop History";
+}
+
+<h2>Workshop Service History</h2>
+
+<a asp-action="Service" class="btn btn-primary mb-3">New Service Job</a>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Job Card</th>
+                <th>Customer</th>
+                <th>Registration</th>
+                <th class="text-end">Parts</th>
+                <th class="text-end">Labour</th>
+                <th class="text-end">Total Bill</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var j in Model)
+        {
+            <tr>
+                <td>@j.JobDate.ToLocalTime().ToString("dd-MMM-yyyy")</td>
+                @* <td>@j.JobCardNumber</td> *@
+                <td>
+                <a asp-action="ServiceDetails"
+                           asp-route-id="@j.Id"
+                           class="text-primary fw-bold text-decoration-none">
+                            @j.JobCardNumber
+                        </a>
+                        </td>
+                <td>@j.CustomerName</td>
+                <td>@j.VehicleRegistration</td>
+                <td class="text-end">@j.PartsTotal.ToString("N2")</td>
+                <td class="text-end">@j.LabourCharges.ToString("N2")</td>
+                <td class="text-end">@j.TotalAmount.ToString("N2")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
